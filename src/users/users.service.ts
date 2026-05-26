@@ -1,43 +1,70 @@
-import { Injectable } from '@nestjs/common';
-import { Prisma, User } from '../../prisma/generated/client';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { Prisma } from '../../prisma/generated/client';
 import { DatabaseService } from '../database/database.service';
+import { UserResponseDto } from './dto/user-response-dto';
 
 @Injectable()
 export class UsersService {
   constructor(private readonly database: DatabaseService) {}
 
-  async create(createUserDto: Prisma.UserCreateInput): Promise<User> {
-    return await this.database.user.create({
+  async create(
+    createUserDto: Prisma.UserCreateInput,
+  ): Promise<UserResponseDto> {
+    const user = await this.database.user.create({
       data: createUserDto,
     });
+
+    return new UserResponseDto(user);
   }
 
-  async findAll(): Promise<User[]> {
-    return await this.database.user.findMany({});
+  async findAll(): Promise<UserResponseDto[]> {
+    const users = await this.database.user.findMany({});
+    return users.map((user) => new UserResponseDto(user));
   }
 
-  async findOne(id: string): Promise<User | null> {
-    return await this.database.user.findUnique({
+  async findOne(id: string): Promise<UserResponseDto> {
+    const user = await this.database.user.findUnique({
       where: {
         id,
       },
     });
+
+    if (!user) {
+      throw new NotFoundException(`User with id ${id} not found.`);
+    }
+
+    return new UserResponseDto(user);
   }
 
-  update(id: string, updateUserDto: Prisma.UserUpdateInput) {
-    return this.database.user.update({
+  async update(
+    id: string,
+    updateUserDto: Prisma.UserUpdateInput,
+  ): Promise<UserResponseDto> {
+    const user = await this.database.user.update({
       where: {
         id,
       },
       data: updateUserDto,
     });
+
+    if (!user) {
+      throw new NotFoundException(`User with id ${id} not found.`);
+    }
+
+    return new UserResponseDto(user);
   }
 
-  remove(id: string) {
-    return this.database.user.delete({
+  async remove(id: string): Promise<UserResponseDto> {
+    const user = await this.database.user.delete({
       where: {
         id,
       },
     });
+
+    if (!user) {
+      throw new NotFoundException(`User with id ${id} not found.`);
+    }
+
+    return new UserResponseDto(user);
   }
 }
