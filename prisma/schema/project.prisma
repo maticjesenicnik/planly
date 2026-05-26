@@ -1,0 +1,18 @@
+model Project {
+  id          String  @id @default(cuid())
+  name        String
+  description String?
+  key         String  @unique
+
+  ownerId   String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  owner User @relation("ProjectOwner", fields: [ownerId], references: [id])
+
+  teams   ProjectTeam[]
+  members ProjectMember[]
+  tasks   Task[]
+  labels  Label[]
+}

@@ -1,0 +1,10 @@
+model ProjectTeam {
+  id        String @id @default(cuid())
+  projectId String
+  teamId    String
+
+  project Project @relation(fields: [projectId], references: [id])
+  team    Team    @relation(fields: [teamId], references: [id])
+
+  @@unique([projectId, teamId])
+}

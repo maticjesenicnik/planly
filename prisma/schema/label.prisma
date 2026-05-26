@@ -1,0 +1,9 @@
+model Label {
+  id        String  @id @default(cuid())
+  name      String
+  color     String?
+  projectId String
+
+  project Project     @relation(fields: [projectId], references: [id])
+  tasks   TaskLabel[]
+}
