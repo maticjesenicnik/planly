@@ -16,18 +16,9 @@ export const ApiCreateUserResponse = () =>
     }),
   );
 
-export const ApiGetUserResponse = () =>
+export const ApiGetUserResponse = ({ multiple }: { multiple: boolean }) =>
   applyDecorators(
-    ApiOkResponse({ type: UserResponseDto }),
-    ApiNotFoundResponse({
-      description: 'User not found',
-      type: ErrorResponseDto,
-    }),
-  );
-
-export const ApiGetUsersResponse = () =>
-  applyDecorators(
-    ApiOkResponse({ type: UserResponseDto, isArray: true }),
+    ApiOkResponse({ type: UserResponseDto, isArray: multiple || false }),
     ApiNotFoundResponse({
       description: 'User not found',
       type: ErrorResponseDto,
@@ -48,6 +39,15 @@ export const ApiDeleteUserResponse = () =>
     ApiOkResponse({ type: UserResponseDto }),
     ApiNotFoundResponse({
       description: 'User to delete not found',
+      type: ErrorResponseDto,
+    }),
+  );
+
+export const ApiRestoreUserResponse = () =>
+  applyDecorators(
+    ApiOkResponse({ type: UserResponseDto }),
+    ApiNotFoundResponse({
+      description: 'User to restore not found',
       type: ErrorResponseDto,
     }),
   );

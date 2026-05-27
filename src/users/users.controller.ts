@@ -14,7 +14,7 @@ import {
   ApiCreateUserResponse,
   ApiDeleteUserResponse,
   ApiGetUserResponse,
-  ApiGetUsersResponse,
+  ApiRestoreUserResponse,
   ApiUpdateUserResponse,
 } from './decorators/user-api-responses';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -36,36 +36,43 @@ export class UsersController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Create a new user' })
-  @ApiGetUsersResponse()
+  @ApiOperation({ summary: 'Find all users' })
+  @ApiGetUserResponse({ multiple: true })
   async findAll(): Promise<UserResponseDto[]> {
-    return this.usersService.findAll();
+    return await this.usersService.findAll();
   }
 
   @Get(':id')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Finds a user based on id' })
-  @ApiGetUserResponse()
+  @ApiOperation({ summary: 'Find a user based on id' })
+  @ApiGetUserResponse({ multiple: false })
   async findOne(@Param('id') id: string): Promise<UserResponseDto> {
-    return this.usersService.findOne(id);
+    return await this.usersService.findOne(id);
   }
 
   @Patch(':id')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Updates a user' })
+  @ApiOperation({ summary: 'Update a user' })
   @ApiUpdateUserResponse()
   async update(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<UserResponseDto> {
-    return this.usersService.update(id, updateUserDto);
+    return await this.usersService.update(id, updateUserDto);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Delete an user' })
+  @ApiOperation({ summary: 'Soft-delete an user' })
   @ApiDeleteUserResponse()
   async remove(@Param('id') id: string): Promise<UserResponseDto> {
-    return this.usersService.remove(id);
+    return await this.usersService.remove(id);
+  }
+
+  @Post(':id/restore')
+  @ApiOperation({ summary: 'Restore a soft-deleted user' })
+  @ApiRestoreUserResponse()
+  async restore(@Param('id') id: string): Promise<UserResponseDto> {
+    return await this.usersService.restore(id);
   }
 }

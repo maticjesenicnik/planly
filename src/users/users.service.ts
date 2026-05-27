@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma } from '../../prisma/generated/client';
+import { ErrorMessages } from '../common/constants/error-messages';
 import { DatabaseService } from '../database/database.service';
 import { UserResponseDto } from './dto/user-response.dto';
 
@@ -30,7 +31,7 @@ export class UsersService {
     });
 
     if (!user) {
-      throw new NotFoundException(`User with id ${id} not found.`);
+      throw new NotFoundException(ErrorMessages.NOT_FOUND('user', id));
     }
 
     return new UserResponseDto(user);
@@ -48,21 +49,39 @@ export class UsersService {
     });
 
     if (!user) {
-      throw new NotFoundException(`User with id ${id} not found.`);
+      throw new NotFoundException(ErrorMessages.NOT_FOUND('user', id));
     }
 
     return new UserResponseDto(user);
   }
 
   async remove(id: string): Promise<UserResponseDto> {
-    const user = await this.database.user.delete({
+    const user = await this.database.user.update({
       where: {
         id,
+      },
+      data: {
+        deletedAt: new Date(),
       },
     });
 
     if (!user) {
-      throw new NotFoundException(`User with id ${id} not found.`);
+      throw new NotFoundException(ErrorMessages.NOT_FOUND('user', id));
+    }
+
+    return new UserResponseDto(user);
+  }
+
+  async restore(id: string): Promise<UserResponseDto> {
+    const user = await this.database.user.update({
+      where: { id },
+      data: {
+        deletedAt: null,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException(ErrorMessages.NOT_FOUND('user', id));
     }
 
     return new UserResponseDto(user);
