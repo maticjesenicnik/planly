@@ -6,7 +6,7 @@ import {
   ApiOkResponse,
 } from '@nestjs/swagger';
 import { ErrorResponseDto } from '../../common/dto/error-response-dto';
-import { UserResponseDto } from '../dto/user-response-dto';
+import { UserResponseDto } from '../dto/user-response.dto';
 
 export const ApiCreateUserResponse = () =>
   applyDecorators(

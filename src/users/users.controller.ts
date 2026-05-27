@@ -17,9 +17,9 @@ import {
   ApiGetUsersResponse,
   ApiUpdateUserResponse,
 } from './decorators/user-api-responses';
-import { CreateUserDto } from './dto/create-user-dto';
-import { UpdateUserDto } from './dto/update-user-dto';
-import { UserResponseDto } from './dto/user-response-dto';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { UserResponseDto } from './dto/user-response.dto';
 import { UsersService } from './users.service';
 
 @Controller('users')
