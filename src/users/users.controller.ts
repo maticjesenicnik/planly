@@ -17,9 +17,9 @@ import {
   ApiRestoreUserResponse,
   ApiUpdateUserResponse,
 } from './decorators/user-api-responses';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { UserCreateDto } from './dto/user-create.dto';
 import { UserResponseDto } from './dto/user-response.dto';
+import { UserUpdateDto } from './dto/user-update.dto';
 import { UsersService } from './users.service';
 
 @Controller('users')
@@ -30,8 +30,8 @@ export class UsersController {
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Create a new user' })
   @ApiCreateUserResponse()
-  async create(@Body() createUserDto: CreateUserDto): Promise<UserResponseDto> {
-    return await this.usersService.create(createUserDto);
+  async create(@Body() UserCreateDto: UserCreateDto): Promise<UserResponseDto> {
+    return await this.usersService.create(UserCreateDto);
   }
 
   @Get()
@@ -56,9 +56,9 @@ export class UsersController {
   @ApiUpdateUserResponse()
   async update(
     @Param('id') id: string,
-    @Body() updateUserDto: UpdateUserDto,
+    @Body() UserUpdateDto: UserUpdateDto,
   ): Promise<UserResponseDto> {
-    return await this.usersService.update(id, updateUserDto);
+    return await this.usersService.update(id, UserUpdateDto);
   }
 
   @Delete(':id')

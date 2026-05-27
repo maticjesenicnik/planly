@@ -9,10 +9,10 @@ export class UsersService {
   constructor(private readonly database: DatabaseService) {}
 
   async create(
-    createUserDto: Prisma.UserCreateInput,
+    UserCreateDto: Prisma.UserCreateInput,
   ): Promise<UserResponseDto> {
     const user = await this.database.user.create({
-      data: createUserDto,
+      data: UserCreateDto,
     });
 
     return new UserResponseDto(user);
@@ -39,13 +39,13 @@ export class UsersService {
 
   async update(
     id: string,
-    updateUserDto: Prisma.UserUpdateInput,
+    UserUpdateDto: Prisma.UserUpdateInput,
   ): Promise<UserResponseDto> {
     const user = await this.database.user.update({
       where: {
         id,
       },
-      data: updateUserDto,
+      data: UserUpdateDto,
     });
 
     if (!user) {

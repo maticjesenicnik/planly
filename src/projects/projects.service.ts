@@ -1,23 +1,23 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ErrorMessages } from '../common/constants/error-messages';
 import { DatabaseService } from '../database/database.service';
-import { CreateProjectDto } from './dto/create-project.dto';
+import { ProjectCreateDto } from './dto/project-create.dto';
 import { ProjectResponseDto } from './dto/project-response.dto';
-import { UpdateProjectDto } from './dto/update-project.dto';
+import { ProjectUpdateDto } from './dto/project-update.dto';
 
 @Injectable()
 export class ProjectsService {
   constructor(private readonly database: DatabaseService) {}
 
   async create(
-    createProjectDto: CreateProjectDto,
+    projectCreateDto: ProjectCreateDto,
   ): Promise<ProjectResponseDto> {
     const project = await this.database.project.create({
       data: {
-        name: createProjectDto.name,
-        description: createProjectDto.description,
-        key: createProjectDto.key,
-        ownerId: createProjectDto.ownerId,
+        name: projectCreateDto.name,
+        description: projectCreateDto.description,
+        key: projectCreateDto.key,
+        ownerId: projectCreateDto.ownerId,
       },
       include: {
         owner: true,
@@ -49,13 +49,13 @@ export class ProjectsService {
     return new ProjectResponseDto(project);
   }
 
-  async update(id: string, updateProjectDto: UpdateProjectDto) {
+  async update(id: string, projectCreateDto: ProjectUpdateDto) {
     const project = await this.database.project.update({
       where: { id },
       data: {
-        name: updateProjectDto.name,
-        description: updateProjectDto.description,
-        ownerId: updateProjectDto.ownerId,
+        name: projectCreateDto.name,
+        description: projectCreateDto.description,
+        ownerId: projectCreateDto.ownerId,
       },
       include: { owner: true },
     });

@@ -17,9 +17,9 @@ import {
   ApiRestoreProjectResponse,
   ApiUpdateProjectResponse,
 } from './decorators/project-api-responses';
-import { CreateProjectDto } from './dto/create-project.dto';
+import { ProjectCreateDto } from './dto/project-create.dto';
 import { ProjectResponseDto } from './dto/project-response.dto';
-import { UpdateProjectDto } from './dto/update-project.dto';
+import { ProjectUpdateDto } from './dto/project-update.dto';
 import { ProjectsService } from './projects.service';
 
 @Controller('projects')
@@ -31,9 +31,9 @@ export class ProjectsController {
   @ApiOperation({ summary: 'Create a new project' })
   @ApiCreateProjectResponse()
   async create(
-    @Body() createProjectDto: CreateProjectDto,
+    @Body() ProjectCreateDto: ProjectCreateDto,
   ): Promise<ProjectResponseDto> {
-    return await this.projectsService.create(createProjectDto);
+    return await this.projectsService.create(ProjectCreateDto);
   }
 
   @Get()
@@ -58,9 +58,9 @@ export class ProjectsController {
   @ApiUpdateProjectResponse()
   async update(
     @Param('id') id: string,
-    @Body() updateProjectDto: UpdateProjectDto,
+    @Body() ProjectUpdateDto: ProjectUpdateDto,
   ): Promise<ProjectResponseDto> {
-    return await this.projectsService.update(id, updateProjectDto);
+    return await this.projectsService.update(id, ProjectUpdateDto);
   }
 
   @Delete(':id')
