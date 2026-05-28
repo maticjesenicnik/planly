@@ -6,6 +6,7 @@ import {
   ApiOkResponse,
 } from '@nestjs/swagger';
 import { ErrorResponseDto } from '../../common/dto/error-response-dto';
+import { ProjectMemberResponseDto } from '../dto/project-member-response.dto';
 import { ProjectResponseDto } from '../dto/project-response.dto';
 
 export const ApiCreateProjectResponse = () =>
@@ -36,7 +37,7 @@ export const ApiUpdateProjectResponse = () =>
 
 export const ApiDeleteProjectResponse = () =>
   applyDecorators(
-    ApiOkResponse({ type: ProjectResponseDto }),
+    ApiOkResponse(),
     ApiNotFoundResponse({
       description: 'Project to delete not found',
       type: ErrorResponseDto,
@@ -48,6 +49,33 @@ export const ApiRestoreProjectResponse = () =>
     ApiOkResponse({ type: ProjectResponseDto }),
     ApiNotFoundResponse({
       description: 'Project to restore not found',
+      type: ErrorResponseDto,
+    }),
+  );
+
+export const ApiAddProjectMemberResponse = () =>
+  applyDecorators(
+    ApiOkResponse({ type: ProjectMemberResponseDto }),
+    ApiNotFoundResponse({
+      description: 'Project or user not found',
+      type: ErrorResponseDto,
+    }),
+  );
+
+export const ApiUpdateProjectMemberRoleResponse = () =>
+  applyDecorators(
+    ApiOkResponse({ type: ProjectMemberResponseDto }),
+    ApiNotFoundResponse({
+      description: 'Project or user not found',
+      type: ErrorResponseDto,
+    }),
+  );
+
+export const ApiDeleteProjectMemberResponse = () =>
+  applyDecorators(
+    ApiOkResponse(),
+    ApiNotFoundResponse({
+      description: 'Project or user not found',
       type: ErrorResponseDto,
     }),
   );

@@ -10,16 +10,18 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
-    "target": "ES2023",
+    "target": "es2023",
     "sourceMap": true,
     "outDir": "./dist",
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": true,
     "forceConsistentCasingInFileNames": true,
-    "noImplicitAny": false,
+    "noImplicitAny": true,
+    "alwaysStrict": true,
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
     "types": ["jest"]
-  }
+  },
+  "include": ["src/**/*"]
 }

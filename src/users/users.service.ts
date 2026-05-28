@@ -1,12 +1,15 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma } from '../../prisma/generated/client';
 import { ErrorMessages } from '../common/constants/error-messages';
+import { BaseService } from '../common/services/base.service';
 import { DatabaseService } from '../database/database.service';
 import { UserResponseDto } from './dto/user-response.dto';
 
 @Injectable()
-export class UsersService {
-  constructor(private readonly database: DatabaseService) {}
+export class UsersService extends BaseService {
+  constructor(database: DatabaseService) {
+    super(database);
+  }
 
   async create(
     UserCreateDto: Prisma.UserCreateInput,
@@ -41,16 +44,14 @@ export class UsersService {
     id: string,
     UserUpdateDto: Prisma.UserUpdateInput,
   ): Promise<UserResponseDto> {
+    await this.validateUserExists(id);
+
     const user = await this.database.user.update({
       where: {
         id,
       },
       data: UserUpdateDto,
     });
-
-    if (!user) {
-      throw new NotFoundException(ErrorMessages.NOT_FOUND('user', id));
-    }
 
     return new UserResponseDto(user);
   }
