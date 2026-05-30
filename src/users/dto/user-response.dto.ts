@@ -23,6 +23,15 @@ export class UserResponseDto {
   name!: string;
 
   @ApiProperty({
+    description: 'User username',
+    example: 'johndoe',
+  })
+  @IsString()
+  username!: string;
+
+  passwordHash?: string;
+
+  @ApiProperty({
     description: 'When the user was created',
     example: '2025-05-26T10:30:00.000Z',
   })

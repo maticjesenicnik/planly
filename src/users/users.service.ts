@@ -1,8 +1,14 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
 import { Prisma } from '../../prisma/generated/client';
 import { ErrorMessages } from '../common/constants/error-messages';
 import { BaseService } from '../common/services/base.service';
 import { DatabaseService } from '../database/database.service';
+import { UserCreateDto } from './dto/user-create.dto';
 import { UserResponseDto } from './dto/user-response.dto';
 
 @Injectable()
@@ -11,11 +17,22 @@ export class UsersService extends BaseService {
     super(database);
   }
 
-  async create(
-    UserCreateDto: Prisma.UserCreateInput,
-  ): Promise<UserResponseDto> {
+  async create(userCreateDto: UserCreateDto): Promise<UserResponseDto> {
+    const existingUser = await this.findOneByEmail(userCreateDto.email);
+    if (existingUser) {
+      throw new ConflictException(
+        ErrorMessages.ALREADY_EXISTS('user', 'email', userCreateDto.email),
+      );
+    }
+
+    const saltRounds = 10;
+    userCreateDto.passwordHash = await bcrypt.hash(
+      userCreateDto.password,
+      saltRounds,
+    );
+
     const user = await this.database.user.create({
-      data: UserCreateDto,
+      data: userCreateDto,
     });
 
     return new UserResponseDto(user);
@@ -35,6 +52,23 @@ export class UsersService extends BaseService {
 
     if (!user) {
       throw new NotFoundException(ErrorMessages.NOT_FOUND('user', id));
+    }
+
+    return new UserResponseDto(user);
+  }
+
+  async findOneByEmail(email: string): Promise<UserResponseDto> {
+    const user = await this.database.user.findUnique({
+      where: {
+        email,
+      },
+      omit: { passwordHash: false },
+    });
+
+    if (!user) {
+      throw new NotFoundException(
+        ErrorMessages.NOT_FOUND('user', email, 'email'),
+      );
     }
 
     return new UserResponseDto(user);

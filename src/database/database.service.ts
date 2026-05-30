@@ -9,6 +9,19 @@ export class DatabaseService extends PrismaClient {
     const adapter = new PrismaPg({
       connectionString: process.env.DATABASE_URL,
     });
-    super({ adapter });
+    super({
+      adapter,
+      omit: { user: { passwordHash: true } },
+      log: ['warn', 'error'],
+    });
+  }
+
+  async onModuleInit() {
+    await this.$connect();
+    console.log('✅ Database connected');
+  }
+
+  async onModuleDestroy() {
+    await this.$disconnect();
   }
 }
