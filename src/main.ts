@@ -39,6 +39,7 @@ async function bootstrap(): Promise<void> {
       description: 'Internal server error',
       type: ErrorResponseDto,
     })
+    .addBearerAuth({ type: 'http' }, 'bearer')
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, documentFactory);

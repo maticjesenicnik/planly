@@ -18,7 +18,6 @@ export class DatabaseService extends PrismaClient {
 
   async onModuleInit() {
     await this.$connect();
-    console.log('✅ Database connected');
   }
 
   async onModuleDestroy() {

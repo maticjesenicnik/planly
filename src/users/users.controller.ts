@@ -9,7 +9,7 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import {
   ApiCreateUserResponse,
   ApiDeleteUserResponse,
@@ -30,6 +30,7 @@ export class UsersController {
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Create a new user' })
   @ApiCreateUserResponse()
+  @ApiBearerAuth('bearer')
   async create(@Body() UserCreateDto: UserCreateDto): Promise<UserResponseDto> {
     return await this.usersService.create(UserCreateDto);
   }
@@ -38,6 +39,7 @@ export class UsersController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Find all users' })
   @ApiGetUserResponse({ multiple: true })
+  @ApiBearerAuth('bearer')
   async findAll(): Promise<UserResponseDto[]> {
     return await this.usersService.findAll();
   }
@@ -46,6 +48,7 @@ export class UsersController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Find a user based on id' })
   @ApiGetUserResponse({ multiple: false })
+  @ApiBearerAuth('bearer')
   async findOne(@Param('id') id: string): Promise<UserResponseDto> {
     return await this.usersService.findOne(id);
   }
@@ -54,6 +57,7 @@ export class UsersController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Update a user' })
   @ApiUpdateUserResponse()
+  @ApiBearerAuth('bearer')
   async update(
     @Param('id') id: string,
     @Body() UserUpdateDto: UserUpdateDto,
@@ -65,6 +69,7 @@ export class UsersController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Soft-delete an user' })
   @ApiDeleteUserResponse()
+  @ApiBearerAuth('bearer')
   async remove(@Param('id') id: string): Promise<UserResponseDto> {
     return await this.usersService.remove(id);
   }
@@ -72,6 +77,7 @@ export class UsersController {
   @Post(':id/restore')
   @ApiOperation({ summary: 'Restore a soft-deleted user' })
   @ApiRestoreUserResponse()
+  @ApiBearerAuth('bearer')
   async restore(@Param('id') id: string): Promise<UserResponseDto> {
     return await this.usersService.restore(id);
   }

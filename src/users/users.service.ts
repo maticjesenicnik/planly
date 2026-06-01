@@ -18,21 +18,46 @@ export class UsersService extends BaseService {
   }
 
   async create(userCreateDto: UserCreateDto): Promise<UserResponseDto> {
-    const existingUser = await this.findOneByEmail(userCreateDto.email);
+    const existingUser = await this.database.user.findFirst({
+      where: {
+        OR: [
+          { email: userCreateDto.email },
+          { username: userCreateDto.username },
+        ],
+      },
+      select: {
+        id: true,
+        email: true,
+        username: true,
+      },
+    });
+
     if (existingUser) {
-      throw new ConflictException(
-        ErrorMessages.ALREADY_EXISTS('user', 'email', userCreateDto.email),
-      );
+      if (existingUser.email === userCreateDto.email) {
+        throw new ConflictException(
+          ErrorMessages.ALREADY_EXISTS('user', 'email', userCreateDto.email),
+        );
+      } else if (existingUser.username === userCreateDto.username) {
+        throw new ConflictException(
+          ErrorMessages.ALREADY_EXISTS(
+            'user',
+            'username',
+            userCreateDto.username,
+          ),
+        );
+      }
     }
 
     const saltRounds = 10;
-    userCreateDto.passwordHash = await bcrypt.hash(
-      userCreateDto.password,
-      saltRounds,
-    );
+    const passwordHash = await bcrypt.hash(userCreateDto.password, saltRounds);
 
     const user = await this.database.user.create({
-      data: userCreateDto,
+      data: {
+        email: userCreateDto.email,
+        username: userCreateDto.username,
+        passwordHash: passwordHash,
+        name: userCreateDto.name,
+      },
     });
 
     return new UserResponseDto(user);

@@ -5,6 +5,7 @@ export const ErrorMessages = {
     `${capitalize(entity)} with ${field} ${id} not found`,
   ALREADY_EXISTS: (entity: string, field: string, value: string) =>
     `${capitalize(entity)} with ${field} "${value}" already exists`,
+  INCORRECT_CREDENTIALS: () => `The email or password is incorrect`,
 } as const;
 
 export const ValidationMessages = {

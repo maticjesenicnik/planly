@@ -19,8 +19,6 @@ export class UserCreateDto {
   @IsNotEmpty({ message: ValidationMessages.PROPERTY_REQUIRED('password') })
   password!: string;
 
-  passwordHash!: string;
-
   @ApiProperty()
   @IsString()
   @IsNotEmpty({ message: ValidationMessages.PROPERTY_REQUIRED('name') })

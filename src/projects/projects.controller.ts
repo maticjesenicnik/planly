@@ -9,7 +9,7 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import {
   ApiAddProjectMemberResponse,
   ApiCreateProjectResponse,
@@ -36,6 +36,7 @@ export class ProjectsController {
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Create a new project' })
   @ApiCreateProjectResponse()
+  @ApiBearerAuth('bearer')
   async create(
     @Body() projectCreateDto: ProjectCreateDto,
   ): Promise<ProjectResponseDto> {
@@ -46,6 +47,7 @@ export class ProjectsController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Find all projects' })
   @ApiGetProjectResponse({ multiple: true })
+  @ApiBearerAuth('bearer')
   async findAll(): Promise<ProjectResponseDto[]> {
     return await this.projectsService.findAll();
   }
@@ -54,6 +56,7 @@ export class ProjectsController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Find a project' })
   @ApiGetProjectResponse({ multiple: false })
+  @ApiBearerAuth('bearer')
   async findOne(@Param('id') id: string): Promise<ProjectResponseDto> {
     return await this.projectsService.findOne(id);
   }
@@ -62,6 +65,7 @@ export class ProjectsController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Update a project' })
   @ApiUpdateProjectResponse()
+  @ApiBearerAuth('bearer')
   async update(
     @Param('id') id: string,
     @Body() projectUpdateDto: ProjectUpdateDto,
@@ -73,6 +77,7 @@ export class ProjectsController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Soft-delete a project' })
   @ApiDeleteProjectResponse()
+  @ApiBearerAuth('bearer')
   async remove(@Param('id') id: string): Promise<void> {
     return await this.projectsService.remove(id);
   }
@@ -81,6 +86,7 @@ export class ProjectsController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Restore a soft-deleted project' })
   @ApiRestoreProjectResponse()
+  @ApiBearerAuth('bearer')
   async restore(@Param('id') id: string): Promise<ProjectResponseDto> {
     return await this.projectsService.restore(id);
   }
@@ -89,6 +95,7 @@ export class ProjectsController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Add a new member to the project' })
   @ApiAddProjectMemberResponse()
+  @ApiBearerAuth('bearer')
   async addMember(
     @Param('id') id: string,
     @Body() projectMemberAddDto: ProjectMemberAddDto,
@@ -100,6 +107,7 @@ export class ProjectsController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Update member role on the project' })
   @ApiUpdateProjectMemberRoleResponse()
+  @ApiBearerAuth('bearer')
   async updateMemberRole(
     @Param('id') id: string,
     @Param('userId') userId: string,
@@ -112,6 +120,7 @@ export class ProjectsController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Remove member from project' })
   @ApiDeleteProjectMemberResponse()
+  @ApiBearerAuth('bearer')
   async removeMember(
     @Param('id') id: string,
     @Param('userId') userId: string,
