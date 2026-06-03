@@ -16,12 +16,22 @@ export abstract class BaseService {
   }
 
   protected async validateProjectExists(id: string): Promise<void> {
-    const user = await this.database.project.findUnique({
+    const project = await this.database.project.findUnique({
       where: { id },
     });
 
-    if (!user) {
+    if (!project) {
       throw new NotFoundException(ErrorMessages.NOT_FOUND('project', id));
+    }
+  }
+
+  protected async validateLabelExists(id: string): Promise<void> {
+    const label = await this.database.label.findUnique({
+      where: { id },
+    });
+
+    if (!label) {
+      throw new NotFoundException(ErrorMessages.NOT_FOUND('label', id));
     }
   }
 }

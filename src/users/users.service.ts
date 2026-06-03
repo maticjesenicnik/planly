@@ -6,6 +6,7 @@ import {
 import * as bcrypt from 'bcrypt';
 import { Prisma } from '../../prisma/generated/client';
 import { ErrorMessages } from '../common/constants/error-messages';
+import { userFullSelect } from '../common/selects/user.select';
 import { BaseService } from '../common/services/base.service';
 import { DatabaseService } from '../database/database.service';
 import { UserCreateDto } from './dto/user-create.dto';
@@ -25,11 +26,7 @@ export class UsersService extends BaseService {
           { username: userCreateDto.username },
         ],
       },
-      select: {
-        id: true,
-        email: true,
-        username: true,
-      },
+      select: userFullSelect,
     });
 
     if (existingUser) {
@@ -58,13 +55,14 @@ export class UsersService extends BaseService {
         passwordHash: passwordHash,
         name: userCreateDto.name,
       },
+      select: userFullSelect,
     });
 
     return new UserResponseDto(user);
   }
 
   async findAll(): Promise<UserResponseDto[]> {
-    const users = await this.database.user.findMany({});
+    const users = await this.database.user.findMany({ select: userFullSelect });
     return users.map((user) => new UserResponseDto(user));
   }
 
@@ -73,6 +71,7 @@ export class UsersService extends BaseService {
       where: {
         id,
       },
+      select: userFullSelect,
     });
 
     if (!user) {
@@ -87,7 +86,7 @@ export class UsersService extends BaseService {
       where: {
         email,
       },
-      omit: { passwordHash: false },
+      select: { ...userFullSelect, passwordHash: true },
     });
 
     if (!user) {
@@ -110,6 +109,7 @@ export class UsersService extends BaseService {
         id,
       },
       data: UserUpdateDto,
+      select: userFullSelect,
     });
 
     return new UserResponseDto(user);
@@ -123,6 +123,7 @@ export class UsersService extends BaseService {
       data: {
         deletedAt: new Date(),
       },
+      select: userFullSelect,
     });
 
     if (!user) {
@@ -138,6 +139,7 @@ export class UsersService extends BaseService {
       data: {
         deletedAt: null,
       },
+      select: userFullSelect,
     });
 
     if (!user) {

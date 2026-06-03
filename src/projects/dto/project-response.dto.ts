@@ -1,6 +1,4 @@
-// src/projects/dto/project-response.dto.ts
 import { ApiProperty } from '@nestjs/swagger';
-import { UserResponseDto } from '../../users/dto/user-response.dto';
 
 export class ProjectResponseDto {
   @ApiProperty({
@@ -33,12 +31,6 @@ export class ProjectResponseDto {
     example: 'cm5z8f9k20000123456789def',
   })
   ownerId!: string;
-
-  @ApiProperty({
-    description: 'Project owner details',
-    type: () => UserResponseDto,
-  })
-  owner!: UserResponseDto;
 
   constructor(partial: Partial<ProjectResponseDto>) {
     Object.assign(this, partial);

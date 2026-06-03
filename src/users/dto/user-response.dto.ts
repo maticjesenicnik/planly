@@ -31,18 +31,6 @@ export class UserResponseDto {
 
   passwordHash?: string;
 
-  @ApiProperty({
-    description: 'When the user was created',
-    example: '2025-05-26T10:30:00.000Z',
-  })
-  createdAt!: Date;
-
-  @ApiProperty({
-    description: 'When the user was last updated',
-    example: '2025-05-26T12:45:00.000Z',
-  })
-  updatedAt!: Date;
-
   constructor(partial: Partial<UserResponseDto>) {
     Object.assign(this, partial);
   }

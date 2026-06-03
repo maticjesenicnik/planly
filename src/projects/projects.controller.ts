@@ -12,14 +12,22 @@ import {
 import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import {
   ApiAddProjectMemberResponse,
+  ApiCreateLabelResponse,
   ApiCreateProjectResponse,
+  ApiDeleteLabelResponse,
   ApiDeleteProjectMemberResponse,
   ApiDeleteProjectResponse,
+  ApiGetLabelResponse,
+  ApiGetProjectMemberResponse,
   ApiGetProjectResponse,
   ApiRestoreProjectResponse,
+  ApiUpdateLabelResponse,
   ApiUpdateProjectMemberRoleResponse,
   ApiUpdateProjectResponse,
 } from './decorators/project-api-responses';
+import { LabelCreateDto } from './dto/label-create.dto';
+import { LabelResponseDto } from './dto/label-response.dto';
+import { LabelUpdateDto } from './dto/label-update.dto';
 import { ProjectCreateDto } from './dto/project-create.dto';
 import { ProjectMemberAddDto } from './dto/project-member-add.dto';
 import { ProjectMemberResponseDto } from './dto/project-member-response.dto';
@@ -78,8 +86,8 @@ export class ProjectsController {
   @ApiOperation({ summary: 'Soft-delete a project' })
   @ApiDeleteProjectResponse()
   @ApiBearerAuth('bearer')
-  async remove(@Param('id') id: string): Promise<void> {
-    return await this.projectsService.remove(id);
+  async remove(@Param('id') id: string): Promise<ProjectResponseDto> {
+    return await this.projectsService.delete(id);
   }
 
   @Post(':id/restore')
@@ -89,6 +97,17 @@ export class ProjectsController {
   @ApiBearerAuth('bearer')
   async restore(@Param('id') id: string): Promise<ProjectResponseDto> {
     return await this.projectsService.restore(id);
+  }
+
+  @Get(':id/members')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Add a new member to the project' })
+  @ApiGetProjectMemberResponse({ multiple: true })
+  @ApiBearerAuth('bearer')
+  async getProjectMembers(
+    @Param('id') id: string,
+  ): Promise<ProjectMemberResponseDto[]> {
+    return await this.projectsService.getProjectMembers(id);
   }
 
   @Post(':id/members')
@@ -125,6 +144,61 @@ export class ProjectsController {
     @Param('id') id: string,
     @Param('userId') userId: string,
   ): Promise<void> {
-    return await this.projectsService.removeMember(id, userId);
+    return await this.projectsService.deleteMember(id, userId);
+  }
+
+  @Get(':id/labels/:labelId')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get detailed information about a label' })
+  @ApiBearerAuth('bearer')
+  @ApiGetLabelResponse({ multiple: true })
+  async getLabel(@Param('id') id: string): Promise<LabelResponseDto[]> {
+    return await this.projectsService.findAllLabels(id);
+  }
+
+  @Get(':id/labels')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get all project labels' })
+  @ApiBearerAuth('bearer')
+  @ApiGetLabelResponse({ multiple: true })
+  async getLabels(@Param('id') id: string): Promise<LabelResponseDto[]> {
+    return await this.projectsService.findAllLabels(id);
+  }
+
+  @Post(':id/labels')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Add a new label to the project' })
+  @ApiCreateLabelResponse()
+  @ApiBearerAuth('bearer')
+  async createLabel(
+    @Param('id') id: string,
+    @Body() labelCreateDto: LabelCreateDto,
+  ): Promise<LabelResponseDto> {
+    return await this.projectsService.createLabel(id, labelCreateDto);
+  }
+
+  @Patch(':id/labels/:labelId')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Update label on the project' })
+  @ApiUpdateLabelResponse()
+  @ApiBearerAuth('bearer')
+  async updateLabel(
+    @Param('id') id: string,
+    @Param('labelId') labelId: string,
+    @Body() dto: LabelUpdateDto,
+  ): Promise<LabelResponseDto> {
+    return await this.projectsService.updateLabel(labelId, dto);
+  }
+
+  @Delete(':id/labels/:labelId')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Remove label from project' })
+  @ApiDeleteLabelResponse()
+  @ApiBearerAuth('bearer')
+  async removeLabel(
+    @Param('id') id: string,
+    @Param('labelId') labelId: string,
+  ): Promise<void> {
+    return await this.projectsService.deleteLabel(id, labelId);
   }
 }

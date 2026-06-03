@@ -6,6 +6,7 @@ import {
   ApiOkResponse,
 } from '@nestjs/swagger';
 import { ErrorResponseDto } from '../../common/dto/error-response-dto';
+import { LabelResponseDto } from '../dto/label-response.dto';
 import { ProjectMemberResponseDto } from '../dto/project-member-response.dto';
 import { ProjectResponseDto } from '../dto/project-response.dto';
 
@@ -53,6 +54,22 @@ export const ApiRestoreProjectResponse = () =>
     }),
   );
 
+export const ApiGetProjectMemberResponse = ({
+  multiple,
+}: {
+  multiple: boolean;
+}) =>
+  applyDecorators(
+    ApiOkResponse({
+      type: ProjectMemberResponseDto,
+      isArray: multiple || false,
+    }),
+    ApiNotFoundResponse({
+      description: 'Project or user not found',
+      type: ErrorResponseDto,
+    }),
+  );
+
 export const ApiAddProjectMemberResponse = () =>
   applyDecorators(
     ApiOkResponse({ type: ProjectMemberResponseDto }),
@@ -76,6 +93,42 @@ export const ApiDeleteProjectMemberResponse = () =>
     ApiOkResponse(),
     ApiNotFoundResponse({
       description: 'Project or user not found',
+      type: ErrorResponseDto,
+    }),
+  );
+
+export const ApiGetLabelResponse = ({ multiple }: { multiple: boolean }) =>
+  applyDecorators(
+    ApiOkResponse({ type: LabelResponseDto, isArray: multiple || false }),
+    ApiNotFoundResponse({
+      description: 'Project not found',
+      type: ErrorResponseDto,
+    }),
+  );
+
+export const ApiCreateLabelResponse = () =>
+  applyDecorators(
+    ApiOkResponse({ type: LabelResponseDto }),
+    ApiNotFoundResponse({
+      description: 'Project not found',
+      type: ErrorResponseDto,
+    }),
+  );
+
+export const ApiUpdateLabelResponse = () =>
+  applyDecorators(
+    ApiOkResponse({ type: LabelResponseDto }),
+    ApiNotFoundResponse({
+      description: 'Project or label not found',
+      type: ErrorResponseDto,
+    }),
+  );
+
+export const ApiDeleteLabelResponse = () =>
+  applyDecorators(
+    ApiOkResponse(),
+    ApiNotFoundResponse({
+      description: 'Project or label not found',
       type: ErrorResponseDto,
     }),
   );
