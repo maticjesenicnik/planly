@@ -34,4 +34,14 @@ export abstract class BaseService {
       throw new NotFoundException(ErrorMessages.NOT_FOUND('label', id));
     }
   }
+
+  protected async validateTaskExists(id: string): Promise<void> {
+    const task = await this.database.task.findUnique({
+      where: { id },
+    });
+
+    if (!task) {
+      throw new NotFoundException(ErrorMessages.NOT_FOUND('task', id));
+    }
+  }
 }

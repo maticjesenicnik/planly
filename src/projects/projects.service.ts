@@ -7,8 +7,11 @@ import { ErrorMessages } from '../common/constants/error-messages';
 import { labelFullSelect } from '../common/selects/label.select';
 import { projectMemberFullSelect } from '../common/selects/project-member.select';
 import { projectFullSelect } from '../common/selects/project.select';
+import { taskFullSelect } from '../common/selects/task.select';
 import { BaseService } from '../common/services/base.service';
 import { DatabaseService } from '../database/database.service';
+import { TaskCreateDto } from '../tasks/dto/task-create.dto';
+import { TaskResponseDto } from '../tasks/dto/task-response.dto';
 import { LabelCreateDto } from './dto/label-create.dto';
 import { LabelResponseDto } from './dto/label-response.dto';
 import { LabelUpdateDto } from './dto/label-update.dto';
@@ -90,15 +93,9 @@ export class ProjectsService extends BaseService {
 
     const project = await this.database.project.update({
       where: { id },
-      data: {
-        deletedAt: new Date(),
-      },
+      data: { deletedAt: new Date() },
       select: projectFullSelect,
     });
-
-    if (!project) {
-      throw new NotFoundException(ErrorMessages.NOT_FOUND('project', id));
-    }
 
     return new ProjectResponseDto(project);
   }
@@ -108,15 +105,9 @@ export class ProjectsService extends BaseService {
 
     const project = await this.database.project.update({
       where: { id },
-      data: {
-        deletedAt: null,
-      },
+      data: { deletedAt: null },
       select: projectFullSelect,
     });
-
-    if (!project) {
-      throw new NotFoundException(ErrorMessages.NOT_FOUND('project', id));
-    }
 
     return new ProjectResponseDto(project);
   }
@@ -275,5 +266,52 @@ export class ProjectsService extends BaseService {
     await this.database.label.delete({
       where: { id: labelId },
     });
+  }
+
+  async createProjectTask(
+    id: string,
+    taskDto: TaskCreateDto,
+  ): Promise<TaskResponseDto> {
+    await this.validateProjectExists(id);
+    const task = await this.database.$transaction(async (tx) => {
+      const lastTask = await tx.task.findFirst({
+        where: { projectId: id },
+        orderBy: { number: 'desc' },
+        select: { number: true },
+      });
+
+      const nextNumber: number = Number(lastTask?.number ?? 0) + 1;
+
+      const task = await tx.task.create({
+        data: {
+          ...taskDto,
+          projectId: id,
+          number: nextNumber,
+          labels: {
+            create: taskDto.labels?.map((labelId: string) => ({
+              label: {
+                connect: { id: labelId },
+              },
+            })),
+          },
+        },
+        select: taskFullSelect,
+      });
+
+      return task;
+    });
+
+    return new TaskResponseDto(task);
+  }
+
+  async findProjectTasks(id: string): Promise<TaskResponseDto[]> {
+    await this.validateProjectExists(id);
+
+    const tasks = await this.database.task.findMany({
+      where: { projectId: id },
+      select: taskFullSelect,
+    });
+
+    return tasks.map((task) => new TaskResponseDto(task));
   }
 }

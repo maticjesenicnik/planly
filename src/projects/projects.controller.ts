@@ -11,6 +11,12 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import {
+  ApiCreateTaskResponse,
+  ApiGetTaskResponse,
+} from '../tasks/decorators/task-api-responses';
+import { TaskCreateDto } from '../tasks/dto/task-create.dto';
+import { TaskResponseDto } from '../tasks/dto/task-response.dto';
+import {
   ApiAddProjectMemberResponse,
   ApiCreateLabelResponse,
   ApiCreateProjectResponse,
@@ -200,5 +206,26 @@ export class ProjectsController {
     @Param('labelId') labelId: string,
   ): Promise<void> {
     return await this.projectsService.deleteLabel(id, labelId);
+  }
+
+  @Post(':id/tasks')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Create a task on a project' })
+  @ApiCreateTaskResponse()
+  @ApiBearerAuth('bearer')
+  async createProjectTask(
+    @Param('id') id: string,
+    @Body() taskCreateDto: TaskCreateDto,
+  ): Promise<TaskResponseDto> {
+    return await this.projectsService.createProjectTask(id, taskCreateDto);
+  }
+
+  @Get(':id/tasks')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get all project tasks' })
+  @ApiGetTaskResponse({ multiple: true })
+  @ApiBearerAuth('bearer')
+  async findProjectTasks(@Param('id') id: string): Promise<TaskResponseDto[]> {
+    return await this.projectsService.findProjectTasks(id);
   }
 }

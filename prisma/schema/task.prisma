@@ -17,11 +17,12 @@ model Task {
   id          String       @id @default(cuid())
   title       String
   description String?
+  number      Int          @default(0)
   status      TaskStatus   @default(TODO)
   priority    TaskPriority @default(MEDIUM)
   dueDate     DateTime?
   projectId   String
-  assigneeId  String
+  assigneeId  String?
   reporterId  String
   parentId    String?
   createdAt   DateTime     @default(now())
@@ -29,9 +30,11 @@ model Task {
   deletedAt   DateTime?
 
   project  Project     @relation(fields: [projectId], references: [id])
-  assignee User        @relation("TaskAssignee", fields: [assigneeId], references: [id])
+  assignee User?       @relation("TaskAssignee", fields: [assigneeId], references: [id])
   reporter User        @relation("TaskReporter", fields: [reporterId], references: [id])
   parent   Task?       @relation("Subtasks", fields: [parentId], references: [id])
   subtasks Task[]      @relation("Subtasks")
   labels   TaskLabel[]
+
+  @@unique([projectId, number])
 }

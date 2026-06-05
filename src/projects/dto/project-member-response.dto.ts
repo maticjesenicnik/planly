@@ -16,4 +16,8 @@ export class ProjectMemberResponseDto {
   @ApiProperty({ enum: ProjectRole, default: ProjectRole.CONTRIBUTOR })
   @IsEnum(ProjectRole)
   role?: ProjectRole = ProjectRole.CONTRIBUTOR;
+
+  constructor(partial: Partial<ProjectMemberResponseDto>) {
+    Object.assign(this, partial);
+  }
 }
