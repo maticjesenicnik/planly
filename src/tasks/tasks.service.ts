@@ -1,11 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { TaskPriority, TaskStatus } from '../../prisma/generated/enums';
 import { ErrorMessages } from '../common/constants/error-messages';
+import { InvalidStatusTransitionException } from '../common/exceptions/invalid-status-transition.exception';
 import { labelFullSelect } from '../common/selects/label.select';
 import { taskFullSelect } from '../common/selects/task.select';
 import { BaseService } from '../common/services/base.service';
 import { DatabaseService } from '../database/database.service';
 import { LabelResponseDto } from '../projects/dto/label-response.dto';
+import { isTaskTransitionAllowed } from './constants/transitions.constant';
 import { TaskResponseDto } from './dto/task-response.dto';
 
 @Injectable()
@@ -114,13 +116,22 @@ export class TasksService extends BaseService {
   async updateStatus(id: string, status: TaskStatus): Promise<TaskResponseDto> {
     await this.validateTaskExists(id);
 
-    const task = await this.database.task.update({
+    const task = await this.database.task.findFirstOrThrow({
+      where: { id },
+      select: taskFullSelect,
+    });
+
+    if (!isTaskTransitionAllowed(task.status, status)) {
+      throw new InvalidStatusTransitionException(task.status, status);
+    }
+
+    const updatedTask = await this.database.task.update({
       where: { id },
       data: { status },
       select: taskFullSelect,
     });
 
-    return new TaskResponseDto(task);
+    return new TaskResponseDto(updatedTask);
   }
 
   async updatePriority(
